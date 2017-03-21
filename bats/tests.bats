@@ -36,7 +36,7 @@ setup() {
   # are available in all my tests
   #APIHOST="localhost"
   #DEFAULT_LISTENER_PORT="9000"
-  APISCHEME=${URLSCHEME:http}
+  APISCHEME=${URLSCHEME:-http}
   URL="$APISCHEME://$APIHOST:${DEFAULT_LISTENER_PORT}"
   URLPATH="$URL/v1/hello"
   create_sample_data

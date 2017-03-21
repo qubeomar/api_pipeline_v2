@@ -50,7 +50,7 @@ cov*.xml
 xunit.xml
 *,cover
 .hypothesis/
-
+qube_version.txt
 # Translations
 *.mo
 *.pot
