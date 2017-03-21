@@ -11,6 +11,7 @@ import unittest
 from mock import patch
 import mongomock
 
+from qube.src.commons.utils import clean_nonserializable_attributes
 
 # noinspection PyUnresolvedReferences
 HELLO_WITH_ID = "/v1/hello/{}"
@@ -30,12 +31,32 @@ def auth_response():
         'type': 'org',
         'tenant': {
             'id': '23432523452345',
+            'name': 'tenantname',
             'orgs': [{
-                'id': '987656789765670'
+                'id': '987656789765670',
+                'name': 'orgname'
             }]
-        }
+        },
+        'is_system_user': False
     }
+    return json.dumps(userinfo)
 
+
+def system_user_auth_response():
+    userinfo = {
+        'id': '1009009009988',
+        'type': 'org',
+        'tenant': {
+            'id': '23432523452345',
+            'name': 'tenantname',
+            'orgs': [{
+                'id': '987656789765670',
+                'name': 'orgname'
+
+            }]
+        },
+        'is_system_user': True
+    }
     return json.dumps(userinfo)
 
 
@@ -45,10 +66,13 @@ def invalid_auth_response():
         'type': 'master',
         'tenant': {
             'id': '23432523452345',
+            'name': 'tenantname',
             'orgs': [{
-                'id': '987656789765670'
+                'id': '987656789765670',
+                'name': 'orgname'
             }]
-        }
+        },
+        'is_system_user': False
     }
     return json.dumps(userinfo)
 
@@ -122,15 +146,16 @@ class TestHelloController(unittest.TestCase):
            return_value=(auth_response(), 200))
     def test_put_hello_item(self, *args, **kwargs):
         entity_id = str(self.data.mongo_id)
-        self.model_data['desc'] = 'updated model desc'
+        self.model_data['description'] = 'updated model desc'
         ist = io.BytesIO(json.dumps(self.model_data).encode('utf-8'))
         rv = self.test_client.put(
             HELLO_WITH_ID.format(entity_id),
             input_stream=ist, headers=self.headers)
+
         self.assertTrue(rv._status_code == 204)
         updated_record = Hello.query.get(entity_id)
-        self.assertEquals(self.model_data['desc'],
-                          updated_record.desc)
+        self.assertEquals(self.model_data['description'],
+                          updated_record.description)
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
@@ -154,6 +179,12 @@ class TestHelloController(unittest.TestCase):
                         "got status code " + str(rv.status_code))
         self.assertTrue(len(result_collection) == 1)
         self.assertTrue(result_collection[0].get('id') == id_to_get)
+        get_record_dic = self.data.wrap()
+        clean_nonserializable_attributes(get_record_dic)
+        for key in get_record_dic:
+            self.assertEqual(get_record_dic[key], result_collection[0].
+                             get(key), "assertion failed for key {} ".
+                             format(key))
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
@@ -165,6 +196,11 @@ class TestHelloController(unittest.TestCase):
         result = json.loads(rv.data.decode('utf-8'))
         self.assertTrue(rv._status_code == 200)
         self.assertTrue(id_to_get == result['id'])
+        get_record_dic = self.data.wrap()
+        clean_nonserializable_attributes(get_record_dic)
+        for key in get_record_dic:
+            self.assertEqual(get_record_dic[key], result.get(key),
+                             "assertion failed for key {} ".format(key))
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
@@ -176,7 +212,7 @@ class TestHelloController(unittest.TestCase):
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
-           return_value=(auth_response(), 200))
+           return_value=(system_user_auth_response(), 200))
     def test_delete_hello_item(self, *args, **kwargs):
         id_to_delete = str(self.data.mongo_id)
         rv = self.test_client.delete(HELLO_WITH_ID.format(id_to_delete),
@@ -187,8 +223,9 @@ class TestHelloController(unittest.TestCase):
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
-           return_value=(auth_response(), 200))
+           return_value=(system_user_auth_response(), 200))
     def test_delete_hello_item_notfound(self, *args, **kwargs):
+
         rv = self.test_client.delete(HELLO_WITH_ID.format(123456),
                                      headers=self.headers)
         self.assertTrue(rv._status_code == 404)

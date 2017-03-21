@@ -41,5 +41,5 @@ if [ "$CONF_SERVER_ADDR" != "" ]; then
   # 5. test
   env
 fi
-
+export DEFAULT_PROCESS_COUNT=${DEFAULT_PROCESS_COUNT:-2}
 set +e

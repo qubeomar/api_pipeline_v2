@@ -108,7 +108,10 @@ response_msgs = {
 class ErrorModel(Schema):
     type = 'object'
     properties = {
-        'message': {
+        'error_code': {
+            'type': 'string'
+        },
+        'error_message': {
             'type': 'string'
         }
     }

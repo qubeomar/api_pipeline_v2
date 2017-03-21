@@ -3,6 +3,7 @@ ADD dist/qube_placeholder*.whl .
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip install qube_placeholder*.whl 
+RUN pip install uwsgi
 
 # install Consul CLI tool
 RUN apt-get update && apt-get install -y jq unzip

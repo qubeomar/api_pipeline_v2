@@ -19,7 +19,7 @@ class HelloModel(Schema):
         'name': {
             'type': 'string'
         },
-        'desc': {
+        'description': {
             'type': 'string'
         },
         'tenantId': {
@@ -50,7 +50,7 @@ class HelloModelPost(Schema):
         'name': {
             'type': 'string'
         },
-        'desc': {
+        'description': {
             'type': 'string'
         }
     }
@@ -63,7 +63,7 @@ class HelloModelPut(Schema):
         'name': {
             'type': 'string'
         },
-        'desc': {
+        'description': {
             'type': 'string'
         }
     }

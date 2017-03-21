@@ -13,9 +13,9 @@ from qube.src.commons.qube_config import QubeConfig
 EMPTY = ''
 
 
-class ResourceItemVersionController(Resource):
+class HelloItemVersionController(Resource):
     def __init__(self, *args, **kwargs):
-        super(ResourceItemVersionController, self).__init__(*args, **kwargs)
+        super(HelloItemVersionController, self).__init__(*args, **kwargs)
         self.config = QubeConfig.get_config()
 
     @swagger.doc(

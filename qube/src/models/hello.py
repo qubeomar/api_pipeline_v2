@@ -7,7 +7,7 @@ class Hello(persist_db.Document):
 
     # Hello  model data
     name = persist_db.StringField(required=False)
-    desc = persist_db.StringField(required=False)
+    description = persist_db.StringField(required=False)
 
     # Default tracking data
     createdBy = persist_db.StringField(required=False)

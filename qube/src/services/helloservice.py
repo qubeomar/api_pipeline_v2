@@ -67,6 +67,10 @@ class HelloService:
         return result
 
     def delete(self, entity_id):
+        if not self.auth_context.is_system_user:
+            raise HelloServiceError(
+                'Delete operation is forbidden',
+                ErrorCodes.NOT_ALLOWED)
         data = Hello.query.get(entity_id)
         if data is None:
             raise HelloServiceError(
