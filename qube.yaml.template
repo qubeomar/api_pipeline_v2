@@ -60,7 +60,7 @@ environment_variables:
   - name: QUBE_SERVICE_MONGOALCHEMY_PORT
     value: $(MONGO_SERVICE_PORT)
   - name: QUBE_SERVICE_MONGOALCHEMY_DATABASE
-    value: toolchain
+    value: qube_placeholder
   - name: CI_ADDR
     value: https://jenkins.qubeship.io
   - name: CI_USERNAME

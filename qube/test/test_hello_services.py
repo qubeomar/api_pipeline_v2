@@ -31,7 +31,8 @@ class TestHelloService(unittest.TestCase):
                               "username", False)
         self.helloService = HelloService(context)
         self.hello_api_model = self.createTestModelData()
-        self.hello_data = self.setupDatabaseRecords(self.hello_api_model)
+        self.hello_data = \
+            self.setupDatabaseRecords(self.hello_api_model)
         self.hello_someoneelses = \
             self.setupDatabaseRecords(self.hello_api_model)
         self.hello_someoneelses.tenantId = "123432523452345"
@@ -97,8 +98,9 @@ class TestHelloService(unittest.TestCase):
         result = self.helloService.update(
             self.hello_api_model_put_description, id_to_find)
         self.assertTrue(result['id'] == str(id_to_find))
-        self.assertTrue(result['description'] ==
-                        self.hello_api_model_put_description['description'])
+        self.assertTrue(
+            result['description'] ==
+            self.hello_api_model_put_description['description'])
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     def test_get_hello_item(self, *args, **kwargs):

@@ -2,7 +2,8 @@ from flask_restful_swagger_2 import Schema
 
 from qube.src.api.swagger_models.hello import HelloErrorModel
 from qube.src.api.swagger_models.hello import HelloModel
-from qube.src.api.swagger_models.hello import HelloModelPostResponse
+from qube.src.api.swagger_models.hello \
+    import HelloModelPostResponse
 
 """
 the common response messages printed in swagger UI

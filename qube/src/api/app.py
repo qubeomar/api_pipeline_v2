@@ -66,7 +66,8 @@ docs.append(api.get_swagger_doc())
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 api.add_resource(HelloItemVersionController, '/v1/hello/version')
 api.add_resource(HelloController, '/v1/hello')
-api.add_resource(HelloItemController, '/v1/hello/<string:entity_id>')
+api.add_resource(HelloItemController,
+                 '/v1/hello/<string:entity_id>')
 
 
 def main():

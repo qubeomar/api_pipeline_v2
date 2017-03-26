@@ -50,8 +50,8 @@ class HelloService:
         return result
 
     def update(self, model, entity_id):
-
-        record = Hello.query.get(entity_id)  # Hello is a mongo class
+        # Hello is a mongo class
+        record = Hello.query.get(entity_id)
         if record is None:
             raise HelloServiceError(
                 'hello {} not found'.format(entity_id),
