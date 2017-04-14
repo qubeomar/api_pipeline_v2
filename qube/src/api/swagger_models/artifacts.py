@@ -28,6 +28,9 @@ class ArtifactsModel(Schema):
         'url': {
             'type': 'string'
         },
+        'isResource': {
+            'type': 'boolean'
+        },
         'projectId': {
             'type': 'string',
         },
@@ -71,6 +74,9 @@ class ArtifactListModel(Schema):
         'title': {
             'type': 'string'
         },
+        'isResource': {
+            'type': 'boolean'
+        },
         'projectId': {
             'type': 'string',
         },
@@ -113,6 +119,9 @@ class ArtifactsModelPost(Schema):
         },
         'url': {
             'type': 'string'
+        },
+        'isResource': {
+            'type': 'boolean'
         }
     }
     required = ['title']
@@ -132,6 +141,9 @@ class ArtifactsModelPut(Schema):
         },
         'url': {
             'type': 'string'
+        },
+        'isResource': {
+            'type': 'boolean'
         }
     }
 
