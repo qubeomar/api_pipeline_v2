@@ -7,15 +7,15 @@ from flask_restful_swagger_2 import Resource, swagger
 from mongoalchemy.exceptions import ExtraValueException
 
 from qube.src.api.decorators import login_required
-from qube.src.api.swagger_models.artifacts import ArtifactsModel, \
-    ArtifactListModel  # noqa: ignore=I100
+from qube.src.api.swagger_models.artifacts import ArtifactListModel,\
+    ArtifactsModel # noqa: ignore=I100
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPost # noqa: ignore=I100
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPostResponse # noqa: ignore=I100
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPut # noqa: ignore=I100
 
 from qube.src.api.swagger_models.parameters import (
     body_post_ex, body_put_ex, header_ex, path_ex, path_ex_iteration,
-    path_ex_project, query_ex)
+    path_ex_project)
 from qube.src.api.swagger_models.response_messages import (
     del_response_msgs, ErrorModel, get_response_msgs, post_response_msgs,
     put_response_msgs)
