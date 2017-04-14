@@ -12,6 +12,7 @@ class Artifacts(persist_db.Document):
     url = persist_db.StringField(required=False)
     projectId = persist_db.StringField(required=False)
     iterationId = persist_db.StringField(required=False)
+    isResource = persist_db.BoolField(required=False)
 
     # Default tracking data
     createdBy = persist_db.StringField(required=False)
