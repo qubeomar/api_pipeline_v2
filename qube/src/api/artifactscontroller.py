@@ -24,8 +24,7 @@ from qube.src.commons.utils import clean_nonserializable_attributes
 from qube.src.services.artifactsservice import ArtifactsService
 
 EMPTY = ''
-get_details_params = [header_ex, path_ex_project, path_ex_iteration, path_ex,
-                      query_ex]
+get_details_params = [header_ex, path_ex_project, path_ex_iteration, path_ex]
 put_params = [header_ex, path_ex_project, path_ex_iteration, path_ex,
               body_put_ex]
 delete_params = [header_ex, path_ex_project, path_ex_iteration, path_ex]
@@ -44,7 +43,7 @@ class ArtifactsItemController(Resource):
     )
     @login_required
     def get(self, authcontext, project_id, iteration_id, entity_id):
-        """gets an artifacts item that omar has changed
+        """gets an artifacts item
         """
         try:
             LOG.debug("Get details by id %s %s %s", project_id, iteration_id,
