@@ -1,6 +1,6 @@
 import time
 
-from qube.src.commons.error import ErrorCodes, ArtifactsServiceError
+from qube.src.commons.error import ArtifactsServiceError, ErrorCodes
 from qube.src.commons.utils import clean_nonserializable_attributes
 from qube.src.models.artifacts import Artifacts
 

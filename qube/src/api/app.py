@@ -9,9 +9,9 @@ import os
 from flask_restful_swagger_2 import Api, swagger
 from pkg_resources import resource_filename
 from qube.src.api import app  # pylint: disable=import-self
-from qube.src.api.flask_swagger_ui import get_swaggerui_blueprint
 from qube.src.api.artifactscontroller import ArtifactsController
 from qube.src.api.artifactscontroller import ArtifactsItemController
+from qube.src.api.flask_swagger_ui import get_swaggerui_blueprint
 from qube.src.api.versioncontroller import ArtifactsItemVersionController
 from qube.src.commons.log import Log as LOG
 
