@@ -9,10 +9,15 @@ class ArtifactsService:
     def __init__(self, context):
         self.auth_context = context
 
-    def find_by_id(self, entity_id):
+    def find_by_id(self, project_id, iteration_id, entity_id):
         # filter with id not working,
         # unable to proceed with tenant filter
-        data = Artifacts.query.get(entity_id)
+        data = Artifacts.query.filter(
+            Artifacts.orgId == self.auth_context.org_id,
+            Artifacts.projectId == project_id,
+            Artifacts.iterationId == iteration_id,
+            Artifacts.mongo_id == entity_id
+        ).first()
         if data is None:
             raise ArtifactsServiceError(
                 'artifacts {} not found'.format(entity_id),
@@ -22,23 +27,29 @@ class ArtifactsService:
         clean_nonserializable_attributes(data)
         return data
 
-    def get_all(self):
+    def get_all(self, project_id, iteration_id):
         list = []
         data = Artifacts.query.filter(
-            Artifacts.tenantId == self.auth_context.tenant_id)
+            Artifacts.orgId == self.auth_context.org_id,
+            Artifacts.projectId == project_id,
+            Artifacts.iterationId == iteration_id
+        ).all()
+
         for data_item in data:
             data = data_item.wrap()
             clean_nonserializable_attributes(data)
             list.append(data)
         return list
 
-    def save(self, model):
+    def save(self, model, project_id, iteration_id):
         new_data = Artifacts()
         for key in model:
             new_data.__setattr__(key, model[key])
         data = new_data
         data.tenantId = self.auth_context.tenant_id
         data.orgId = self.auth_context.org_id
+        data.projectId = project_id
+        data.iterationId = iteration_id
         data.createdBy = self.auth_context.user_id
         data.createdDate = str(int(time.time()))
         data.modifiedBy = self.auth_context.user_id
@@ -49,9 +60,13 @@ class ArtifactsService:
         clean_nonserializable_attributes(result)
         return result
 
-    def update(self, model, entity_id):
+    def update(self, model, project_id, iteration_id, entity_id):
         # Artifacts is a mongo class
-        record = Artifacts.query.get(entity_id)
+        record = Artifacts.query.filter(
+            Artifacts.orgId == self.auth_context.org_id,
+            Artifacts.projectId == project_id,
+            Artifacts.iterationId == iteration_id,
+            Artifacts.mongo_id == entity_id).first()
         if record is None:
             raise ArtifactsServiceError(
                 'artifacts {} not found'.format(entity_id),
@@ -66,12 +81,17 @@ class ArtifactsService:
         clean_nonserializable_attributes(result)
         return result
 
-    def delete(self, entity_id):
+    def delete(self, project_id, iteration_id, entity_id):
         if not self.auth_context.is_system_user:
             raise ArtifactsServiceError(
                 'Delete operation is forbidden',
                 ErrorCodes.NOT_ALLOWED)
-        data = Artifacts.query.get(entity_id)
+        data = Artifacts.query.filter(
+            Artifacts.orgId == self.auth_context.org_id,
+            Artifacts.projectId == project_id,
+            Artifacts.iterationId == iteration_id,
+            Artifacts.mongo_id == entity_id
+        ).first()
         if data is None:
             raise ArtifactsServiceError(
                 'artifacts {} not found'.format(entity_id),

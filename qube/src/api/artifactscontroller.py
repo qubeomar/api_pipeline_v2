@@ -13,7 +13,8 @@ from qube.src.api.swagger_models.artifacts import ArtifactsModelPostResponse # n
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPut # noqa: ignore=I100
 
 from qube.src.api.swagger_models.parameters import (
-    body_post_ex, body_put_ex, header_ex, path_ex, query_ex)
+    body_post_ex, body_put_ex, header_ex, path_ex, path_ex_iteration,
+    path_ex_project, query_ex)
 from qube.src.api.swagger_models.response_messages import (
     del_response_msgs, ErrorModel, get_response_msgs, post_response_msgs,
     put_response_msgs)
@@ -23,11 +24,13 @@ from qube.src.commons.utils import clean_nonserializable_attributes
 from qube.src.services.artifactsservice import ArtifactsService
 
 EMPTY = ''
-get_details_params = [header_ex, path_ex, query_ex]
-put_params = [header_ex, path_ex, body_put_ex]
-delete_params = [header_ex, path_ex]
-get_params = [header_ex]
-post_params = [header_ex, body_post_ex]
+get_details_params = [header_ex, path_ex_project, path_ex_iteration, path_ex,
+                      query_ex]
+put_params = [header_ex, path_ex_project, path_ex_iteration, path_ex,
+              body_put_ex]
+delete_params = [header_ex, path_ex_project, path_ex_iteration, path_ex]
+get_params = [header_ex, path_ex_project, path_ex_iteration]
+post_params = [header_ex, body_post_ex, path_ex_project, path_ex_iteration]
 
 
 class ArtifactsItemController(Resource):
@@ -40,13 +43,14 @@ class ArtifactsItemController(Resource):
         }
     )
     @login_required
-    def get(self, authcontext, entity_id):
+    def get(self, authcontext, project_id, iteration_id, entity_id):
         """gets an artifacts item that omar has changed
         """
         try:
-            LOG.debug("Get details by id %s ", entity_id)
+            LOG.debug("Get details by id %s %s %s", project_id, iteration_id,
+                      entity_id)
             data = ArtifactsService(authcontext['context'])\
-                .find_by_id(entity_id)
+                .find_by_id(project_id, iteration_id, entity_id)
             clean_nonserializable_attributes(data)
         except ArtifactsServiceError as e:
             LOG.error(e)
@@ -67,14 +71,15 @@ class ArtifactsItemController(Resource):
         }
     )
     @login_required
-    def put(self, authcontext, entity_id):
+    def put(self, authcontext, project_id, iteration_id, entity_id):
         """
         updates an artifacts item
         """
         try:
             model = ArtifactsModelPut(**request.get_json())
             context = authcontext['context']
-            ArtifactsService(context).update(model, entity_id)
+            ArtifactsService(context).update(model, project_id, iteration_id,
+                                             entity_id)
             return EMPTY, 204
         except ArtifactsServiceError as e:
             LOG.error(e)
@@ -98,12 +103,14 @@ class ArtifactsItemController(Resource):
         }
     )
     @login_required
-    def delete(self, authcontext, entity_id):
+    def delete(self, authcontext, project_id, iteration_id, entity_id):
         """
         Delete artifacts item
         """
         try:
-            ArtifactsService(authcontext['context']).delete(entity_id)
+            ArtifactsService(authcontext['context']).delete(project_id,
+                                                            iteration_id,
+                                                            entity_id)
             return EMPTY, 204
         except ArtifactsServiceError as e:
             LOG.error(e)
@@ -129,12 +136,13 @@ class ArtifactsController(Resource):
         }
     )
     @login_required
-    def get(self, authcontext):
+    def get(self, authcontext, project_id, iteration_id):
         """
         gets all artifacts items
         """
         LOG.debug("Serving  Get all request")
-        list = ArtifactsService(authcontext['context']).get_all()
+        list = ArtifactsService(authcontext['context']).get_all(project_id,
+                                                                iteration_id)
         # normalize the name for 'id'
         return list, 200
 
@@ -147,14 +155,14 @@ class ArtifactsController(Resource):
         }
     )
     @login_required
-    def post(self, authcontext):
+    def post(self, authcontext, project_id, iteration_id):
         """
         Adds a artifacts item.
         """
         try:
             model = ArtifactsModelPost(**request.get_json())
             result = ArtifactsService(authcontext['context'])\
-                .save(model)
+                .save(model, project_id, iteration_id)
 
             response = ArtifactsModelPostResponse()
             for key in response.properties:

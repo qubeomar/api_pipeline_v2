@@ -2,7 +2,10 @@
 #env variables are loaded from .env.sh file
 
 data='{
-    "name": "test123123124"
+         "type": "test123123124",
+         "contentType": "html",
+         "title": "test",
+         "url": "test"
 }'
 
 create_sample_data() {
@@ -38,7 +41,7 @@ setup() {
   #DEFAULT_LISTENER_PORT="9000"
   APISCHEME=${URLSCHEME:-http}
   URL="$APISCHEME://$APIHOST:${DEFAULT_LISTENER_PORT}"
-  URLPATH="$URL/v1/artifacts"
+  URLPATH="$URL/v2/pipelines/12345/678910/artifacts"
   create_sample_data
 }
 
@@ -79,16 +82,23 @@ teardown() {
 }
 
 @test "update_record" {
-  put_data='{"name":"put_name_test123"}'
-  echo curl -H \"Authorization: Bearer $TOKEN\" -X PUT -H \"Content-Type: application/json\"  -d ${put_data} "$URLPATH/$id" >> /tmp/test.out
-  status_code=`curl -H "Authorization: Bearer $TOKEN" -X PUT -w "%{http_code}" -H "Content-Type: application/json"  -d ${put_data} "$URLPATH/$id"`
+  put_data='{
+         "type": "test123123124"
+}'
+  echo curl -H \"Authorization: Bearer $TOKEN\" -X PUT -H \"Content-Type: application/json\"  -d "${put_data}" "$URLPATH/$id" >> /tmp/test.out
+  status_code=`curl -H "Authorization: Bearer $TOKEN" -X PUT -w "%{http_code}" -H "Content-Type: application/json"  -d "${put_data}" "$URLPATH/$id"`
   echo "checkout the output - $status_code , id $id" >> /tmp/test.out
   [ $status_code -eq 204 ]
 }
 
 
 @test "create_record" {
-  post_data='{"name":"post_name_test123"}'
+  post_data='{
+         "type": "test123123124",
+         "contentType": "html",
+         "title": "test",
+         "url": "test"
+  }'
   echo curl -H "Authorization: Bearer $TOKEN" -X POST -H "Content-Type: application/json" -d "${post_data}" "$URLPATH" | jq '.id' | sed 's/\"//g' >> /tmp/test.out
 
   result_id=$(curl -H "Authorization: Bearer $TOKEN" -X POST -H "Content-Type: application/json"  -d "${post_data}" "$URLPATH" | jq '.id' | sed 's/\"//g')
@@ -99,7 +109,12 @@ teardown() {
 @test "delete_record" {
 
   #create a new record to be deleted later
-  post_data='{"name":"post_name_test123"}'
+  post_data='{
+         "type": "test123123124",
+         "contentType": "html",
+         "title": "test",
+         "url": "test"
+  }'
   new_record_id=$(curl -H "Authorization: Bearer $TOKEN" -X POST -H "Content-Type: application/json"  -d "${post_data}" "$URLPATH" | jq '.id' | sed 's/\"//g')
   echo "new record id = $new_record_id" >> /tmp/test.out
 

@@ -12,7 +12,7 @@ import mongomock
 from pkg_resources import resource_filename
 from qube.src.commons.qube_config import QubeConfig
 
-HELLO_VERSION = "/v1/artifacts/version"
+HELLO_VERSION = "/v2/pipelines/version"
 with patch('pymongo.mongo_client.MongoClient', new=mongomock.MongoClient):
     os.environ['ARTIFACTS_MONGOALCHEMY_CONNECTION_STRING'] = ''
     os.environ['ARTIFACTS_MONGOALCHEMY_SERVER'] = ''
@@ -41,8 +41,8 @@ class TestArtifactsVersionController(unittest.TestCase):
                                             'application/json')])
         result = json.loads(rv.data.decode('utf-8'))
         self.assertTrue(rv._status_code == 200)
-        self.assertEquals(result['version'],
-                          QubeConfig.get_config().default_ver)
+        self.assertEqual(result['version'],
+                         QubeConfig.get_config().default_ver)
 
     def test_artifacts_git_version(self, *args, **kwargs):
         QubeConfig.get_config().QUBE_VERSION_FILE = resource_filename(
@@ -60,7 +60,7 @@ class TestArtifactsVersionController(unittest.TestCase):
                                             'application/json')])
         result = json.loads(rv.data.decode('utf-8'))
         self.assertTrue(rv._status_code == 200)
-        self.assertEquals(result['version'], expected_version_string)
+        self.assertEqual(result['version'], expected_version_string)
 
     @classmethod
     def tearDownClass(cls):

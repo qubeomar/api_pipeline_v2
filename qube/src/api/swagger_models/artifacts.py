@@ -16,11 +16,23 @@ class ArtifactsModel(Schema):
         'id': {
             'type': 'string',
         },
-        'name': {
+        'type': {
+            'type': 'string',
+        },
+        'contentType': {
+            'type': 'string',
+        },
+        'title': {
             'type': 'string'
         },
-        'description': {
+        'url': {
             'type': 'string'
+        },
+        'projectId': {
+            'type': 'string',
+        },
+        'iterationId': {
+            'type': 'string',
         },
         'tenantId': {
             'type': 'string'
@@ -41,29 +53,84 @@ class ArtifactsModel(Schema):
             'type': 'string'
         }
     }
-    required = ['name']
+    required = ['title']
+
+
+class ArtifactListModel(Schema):
+    type = 'object'
+    properties = {
+        'id': {
+            'type': 'string',
+        },
+        'type': {
+            'type': 'string',
+        },
+        'contentType': {
+            'type': 'string',
+        },
+        'title': {
+            'type': 'string'
+        },
+        'projectId': {
+            'type': 'string',
+        },
+        'iterationId': {
+            'type': 'string',
+        },
+        'tenantId': {
+            'type': 'string'
+        },
+        'orgId': {
+            'type': 'string'
+        },
+        'createdBy': {
+            'type': 'string'
+        },
+        'createdDate': {
+            'type': 'string'
+        },
+        'modifiedBy': {
+            'type': 'string'
+        },
+        'modifiedDate': {
+            'type': 'string'
+        }
+    }
+    required = ['title']
 
 
 class ArtifactsModelPost(Schema):
     type = 'object'
     properties = {
-        'name': {
+        'type': {
+            'type': 'string',
+        },
+        'contentType': {
+            'type': 'string',
+        },
+        'title': {
             'type': 'string'
         },
-        'description': {
+        'url': {
             'type': 'string'
         }
     }
-    required = ['name']
+    required = ['title']
 
 
 class ArtifactsModelPut(Schema):
     type = 'object'
     properties = {
-        'name': {
+        'type': {
+            'type': 'string',
+        },
+        'contentType': {
+            'type': 'string',
+        },
+        'title': {
             'type': 'string'
         },
-        'description': {
+        'url': {
             'type': 'string'
         }
     }
@@ -88,4 +155,4 @@ class ArtifactsErrorModel(Schema):
             'type': 'string'
         }
     }
-    required = ['name']
+    required = ['title']

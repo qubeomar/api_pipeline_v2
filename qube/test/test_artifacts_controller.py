@@ -10,12 +10,17 @@ import unittest
 
 from mock import patch
 import mongomock
+from mongomock import ObjectId
 
 from qube.src.commons.utils import clean_nonserializable_attributes
 
 # noinspection PyUnresolvedReferences
-HELLO_WITH_ID = "/v1/artifacts/{}"
-HELLO = "/v1/artifacts"
+ARTIFACT_URL_WITH_ID = "/v2/pipelines/{}/{}/artifacts/{}"
+ARTIFACT_URL = "/v2/pipelines/{}/{}/artifacts"
+ITERATION_ID = "891011"
+
+PROJECT_ID = "123456"
+SOME_OTHER_PROJECT_ID = "456789"
 with patch('pymongo.mongo_client.MongoClient', new=mongomock.MongoClient):
     os.environ['ARTIFACTS_MONGOALCHEMY_CONNECTION_STRING'] = ''
     os.environ['ARTIFACTS_MONGOALCHEMY_SERVER'] = ''
@@ -90,7 +95,12 @@ class TestArtifactsController(unittest.TestCase):
         print("before class")
 
     def createTestModelData(self):
-        return {'name': 'test123123124'}
+        return {
+            'type': 'test123123124',
+            'contentType': 'html',
+            'title': 'test',
+            'url': 'test'
+        }
 
     def createTestHeaders(self, data):
         headers = [('Content-Type', 'application/json'),
@@ -103,10 +113,14 @@ class TestArtifactsController(unittest.TestCase):
         return headers
 
     @patch('pymongo.mongo_client.MongoClient', new=mongomock.MongoClient)
-    def setupDatabaseRecords(self):
+    def setupDatabaseRecords(self, model, project_id, iteration_id):
         with patch('mongomock.write_concern.WriteConcern.__init__',
                    return_value=None):
-            data = Artifacts(name='test_record')
+            data = Artifacts()
+            for key in model:
+                data.__setattr__(key, model[key])
+            data.projectId = project_id
+            data.iterationId = iteration_id
             data.tenantId = "23432523452345"
             data.orgId = "987656789765670"
             data.createdBy = "1009009009988"
@@ -118,8 +132,9 @@ class TestArtifactsController(unittest.TestCase):
 
     @patch('pymongo.mongo_client.MongoClient', new=mongomock.MongoClient)
     def setUp(self):
-        self.data = self.setupDatabaseRecords()
         self.model_data = self.createTestModelData()
+        self.data = self.setupDatabaseRecords(self.model_data, PROJECT_ID,
+                                              ITERATION_ID)
         self.headers = self.createTestHeaders(self.model_data)
         self.auth = auth_response()
         self.test_client = app.test_client()
@@ -134,7 +149,8 @@ class TestArtifactsController(unittest.TestCase):
            return_value=(auth_response(), 200))
     def test_post_artifacts(self, *args, **kwargs):
         ist = io.BytesIO(json.dumps(self.model_data).encode('utf-8'))
-        rv = self.test_client.post(HELLO,
+        rv = self.test_client.post(ARTIFACT_URL.format(PROJECT_ID,
+                                                       ITERATION_ID),
                                    input_stream=ist, headers=self.headers)
         result = json.loads(rv.data.decode('utf-8'))
 
@@ -146,16 +162,16 @@ class TestArtifactsController(unittest.TestCase):
            return_value=(auth_response(), 200))
     def test_put_artifacts_item(self, *args, **kwargs):
         entity_id = str(self.data.mongo_id)
-        self.model_data['description'] = 'updated model desc'
+        self.model_data['title'] = 'updated model desc'
         ist = io.BytesIO(json.dumps(self.model_data).encode('utf-8'))
         rv = self.test_client.put(
-            HELLO_WITH_ID.format(entity_id),
+            ARTIFACT_URL_WITH_ID.format(PROJECT_ID, ITERATION_ID, entity_id),
             input_stream=ist, headers=self.headers)
 
         self.assertTrue(rv._status_code == 204)
         updated_record = Artifacts.query.get(entity_id)
-        self.assertEquals(self.model_data['description'],
-                          updated_record.description)
+        self.assertEquals(self.model_data['title'],
+                          updated_record.title)
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
@@ -163,7 +179,9 @@ class TestArtifactsController(unittest.TestCase):
     def test_put_artifacts_item_non_found(self, *args, **kwargs):
 
         ist = io.BytesIO(json.dumps(self.model_data).encode('utf-8'))
-        rv = self.test_client.put(HELLO_WITH_ID.format(1234),
+        rv = self.test_client.put(ARTIFACT_URL_WITH_ID.format(PROJECT_ID,
+                                                              ITERATION_ID,
+                                                              str(ObjectId())),
                                   input_stream=ist,
                                   headers=self.headers)
         self.assertTrue(rv._status_code == 404)
@@ -173,7 +191,9 @@ class TestArtifactsController(unittest.TestCase):
            return_value=(auth_response(), 200))
     def test_get_artifacts(self, *args, **kwargs):
         id_to_get = str(self.data.mongo_id)
-        rv = self.test_client.get(HELLO, headers=self.headers)
+        rv = self.test_client.get(ARTIFACT_URL.format(PROJECT_ID,
+                                                      ITERATION_ID),
+                                  headers=self.headers)
         result_collection = json.loads(rv.data.decode('utf-8'))
         self.assertTrue(rv._status_code == 200,
                         "got status code " + str(rv.status_code))
@@ -191,7 +211,9 @@ class TestArtifactsController(unittest.TestCase):
            return_value=(auth_response(), 200))
     def test_get_artifacts_item(self, *args, **kwargs):
         id_to_get = str(self.data.mongo_id)
-        rv = self.test_client.get(HELLO_WITH_ID.format(id_to_get),
+        rv = self.test_client.get(ARTIFACT_URL_WITH_ID.format(PROJECT_ID,
+                                                              ITERATION_ID,
+                                                              id_to_get),
                                   headers=self.headers)
         result = json.loads(rv.data.decode('utf-8'))
         self.assertTrue(rv._status_code == 200)
@@ -206,7 +228,9 @@ class TestArtifactsController(unittest.TestCase):
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
            return_value=(auth_response(), 200))
     def test_get_artifacts_item_not_found(self, *args, **kwargs):
-        rv = self.test_client.get(HELLO_WITH_ID.format(12345),
+        rv = self.test_client.get(ARTIFACT_URL_WITH_ID.format(PROJECT_ID,
+                                                              ITERATION_ID,
+                                                              str(ObjectId())),
                                   headers=self.headers)
         self.assertTrue(rv._status_code == 404)
 
@@ -215,7 +239,9 @@ class TestArtifactsController(unittest.TestCase):
            return_value=(system_user_auth_response(), 200))
     def test_delete_artifacts_item(self, *args, **kwargs):
         id_to_delete = str(self.data.mongo_id)
-        rv = self.test_client.delete(HELLO_WITH_ID.format(id_to_delete),
+        rv = self.test_client.delete(ARTIFACT_URL_WITH_ID.format(PROJECT_ID,
+                                                                 ITERATION_ID,
+                                                                 id_to_delete),
                                      headers=self.headers)
         self.assertTrue(rv._status_code == 204)
         deleted_record = Artifacts.query.get(id_to_delete)
@@ -226,7 +252,10 @@ class TestArtifactsController(unittest.TestCase):
            return_value=(system_user_auth_response(), 200))
     def test_delete_artifacts_item_notfound(self, *args, **kwargs):
 
-        rv = self.test_client.delete(HELLO_WITH_ID.format(123456),
+        rv = self.test_client.delete(ARTIFACT_URL_WITH_ID.format(PROJECT_ID,
+                                                                 ITERATION_ID,
+                                                                 str
+                                                                 (ObjectId())),
                                      headers=self.headers)
         self.assertTrue(rv._status_code == 404)
 
@@ -235,23 +264,27 @@ class TestArtifactsController(unittest.TestCase):
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
            return_value=(no_auth_response(), 401))
     def test_get_artifacts_not_authorized(self, *args, **kwargs):
-        rv = self.test_client.get(HELLO, headers=self.headers)
+        rv = self.test_client.get(ARTIFACT_URL.format(SOME_OTHER_PROJECT_ID,
+                                                      ITERATION_ID
+                                                      ), headers=self.headers)
         self.assertTrue(rv._status_code == 401)
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
            return_value=(invalid_auth_response(), 200))
     def test_get_artifacts_master_token(self, *args, **kwargs):
-        rv = self.test_client.get(HELLO, headers=self.headers)
+        rv = self.test_client.get(
+            ARTIFACT_URL.format(PROJECT_ID, ITERATION_ID),
+            headers=self.headers)
         self.assertTrue(rv._status_code == 403)
 
     @patch('mongomock.write_concern.WriteConcern.__init__', return_value=None)
     @patch('qube.src.api.decorators.validate_with_qubeship_auth',
            return_value=(no_auth_response(), 401))
     def test_get_artifacts_no_authorization(self, *args, **kwargs):
-        rv = self.test_client.get(HELLO,
-                                  headers=[('Content-Type',
-                                            'application/json')])
+        rv = self.test_client.get(
+            ARTIFACT_URL.format(PROJECT_ID, ITERATION_ID),
+            headers=[('Content-Type', 'application/json')])
         self.assertTrue(rv._status_code == 401)
 
     @classmethod

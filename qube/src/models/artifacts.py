@@ -6,8 +6,12 @@ class Artifacts(persist_db.Document):
     id = persist_db.StringField(required=False)
 
     # Artifacts  model data
-    name = persist_db.StringField(required=False)
-    description = persist_db.StringField(required=False)
+    type = persist_db.StringField(required=False)
+    contentType = persist_db.StringField(required=False)
+    title = persist_db.StringField(required=False)
+    url = persist_db.StringField(required=False)
+    projectId = persist_db.StringField(required=False)
+    iterationId = persist_db.StringField(required=False)
 
     # Default tracking data
     createdBy = persist_db.StringField(required=False)

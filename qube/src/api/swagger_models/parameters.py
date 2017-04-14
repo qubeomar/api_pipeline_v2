@@ -20,6 +20,22 @@ path_ex = {
     "required": True
 }
 
+path_ex_project = {
+    "type": "string",
+    "description": "This is the part of the URL",
+    "name": "project_id",
+    "in": "path",
+    "required": True
+}
+
+path_ex_iteration = {
+    "type": "string",
+    "description": "This is the part of the URL",
+    "name": "iteration_id",
+    "in": "path",
+    "required": True
+}
+
 query_ex = {
     "type": "string",
     "description": "Query string appended to the URL",

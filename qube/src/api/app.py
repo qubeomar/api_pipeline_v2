@@ -64,10 +64,13 @@ docs.append(api.get_swagger_doc())
 (docs, API_URL+'.json', title='Example', api_version='0.1'))
 """
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-api.add_resource(ArtifactsItemVersionController, '/v1/artifacts/version')
-api.add_resource(ArtifactsController, '/v1/artifacts')
+api.add_resource(ArtifactsItemVersionController, '/v2/pipelines/version')
+api.add_resource(ArtifactsController,
+                 '/v2/pipelines/<string:project_id>/<string:iteration_id'
+                 '>/artifacts')
 api.add_resource(ArtifactsItemController,
-                 '/v1/artifacts/<string:entity_id>')
+                 '/v2/pipelines/<string:project_id>/<string:iteration_id'
+                 '>/artifacts/<string:entity_id>')
 
 
 def main():
