@@ -9,7 +9,11 @@ build:
     name: python:3.5-onbuild
     onbuild:
       - scripts/build.sh
-  publish_artifact: dist/
+  publish_artifacts:
+    - dist/
+    - nosetests.xml
+    - cov_html/
+    - flake8-output.txt
   lint: true
 bake:
   strategy: docker
