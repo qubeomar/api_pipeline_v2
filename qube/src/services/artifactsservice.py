@@ -1,21 +1,21 @@
 import time
 
-from qube.src.commons.error import ErrorCodes, HelloServiceError
+from qube.src.commons.error import ErrorCodes, ArtifactsServiceError
 from qube.src.commons.utils import clean_nonserializable_attributes
-from qube.src.models.hello import Hello
+from qube.src.models.artifacts import Artifacts
 
 
-class HelloService:
+class ArtifactsService:
     def __init__(self, context):
         self.auth_context = context
 
     def find_by_id(self, entity_id):
         # filter with id not working,
         # unable to proceed with tenant filter
-        data = Hello.query.get(entity_id)
+        data = Artifacts.query.get(entity_id)
         if data is None:
-            raise HelloServiceError(
-                'hello {} not found'.format(entity_id),
+            raise ArtifactsServiceError(
+                'artifacts {} not found'.format(entity_id),
                 ErrorCodes.NOT_FOUND)
 
         data = data.wrap()
@@ -24,8 +24,8 @@ class HelloService:
 
     def get_all(self):
         list = []
-        data = Hello.query.filter(
-            Hello.tenantId == self.auth_context.tenant_id)
+        data = Artifacts.query.filter(
+            Artifacts.tenantId == self.auth_context.tenant_id)
         for data_item in data:
             data = data_item.wrap()
             clean_nonserializable_attributes(data)
@@ -33,7 +33,7 @@ class HelloService:
         return list
 
     def save(self, model):
-        new_data = Hello()
+        new_data = Artifacts()
         for key in model:
             new_data.__setattr__(key, model[key])
         data = new_data
@@ -50,11 +50,11 @@ class HelloService:
         return result
 
     def update(self, model, entity_id):
-        # Hello is a mongo class
-        record = Hello.query.get(entity_id)
+        # Artifacts is a mongo class
+        record = Artifacts.query.get(entity_id)
         if record is None:
-            raise HelloServiceError(
-                'hello {} not found'.format(entity_id),
+            raise ArtifactsServiceError(
+                'artifacts {} not found'.format(entity_id),
                 ErrorCodes.NOT_FOUND)
 
         for key in model:
@@ -68,12 +68,12 @@ class HelloService:
 
     def delete(self, entity_id):
         if not self.auth_context.is_system_user:
-            raise HelloServiceError(
+            raise ArtifactsServiceError(
                 'Delete operation is forbidden',
                 ErrorCodes.NOT_ALLOWED)
-        data = Hello.query.get(entity_id)
+        data = Artifacts.query.get(entity_id)
         if data is None:
-            raise HelloServiceError(
-                'hello {} not found'.format(entity_id),
+            raise ArtifactsServiceError(
+                'artifacts {} not found'.format(entity_id),
                 ErrorCodes.NOT_FOUND)
         data.remove()

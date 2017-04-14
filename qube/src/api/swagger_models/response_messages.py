@@ -1,9 +1,9 @@
 from flask_restful_swagger_2 import Schema
 
-from qube.src.api.swagger_models.hello import HelloErrorModel
-from qube.src.api.swagger_models.hello import HelloModel
-from qube.src.api.swagger_models.hello \
-    import HelloModelPostResponse
+from qube.src.api.swagger_models.artifacts import ArtifactsErrorModel
+from qube.src.api.swagger_models.artifacts import ArtifactsModel
+from qube.src.api.swagger_models.artifacts \
+    import ArtifactsModelPostResponse
 
 """
 the common response messages printed in swagger UI
@@ -12,7 +12,7 @@ the common response messages printed in swagger UI
 post_response_msgs = {
     '201': {
         'description': 'CREATED',
-        'schema': HelloModelPostResponse
+        'schema': ArtifactsModelPostResponse
     },
     '401': {
         'description': 'Unauthorized'
@@ -25,14 +25,14 @@ post_response_msgs = {
     },
     '500': {
         'description': 'Internal server error',
-        'schema': HelloErrorModel
+        'schema': ArtifactsErrorModel
     }
 }
 
 get_response_msgs = {
     '200': {
         'description': 'OK',
-        'schema': HelloModel
+        'schema': ArtifactsModel
     },
     '401': {
         'description': 'Unauthorized'
@@ -45,7 +45,7 @@ get_response_msgs = {
     },
     '500': {
         'description': 'Internal server error',
-        'schema': HelloErrorModel
+        'schema': ArtifactsErrorModel
     }
 }
 
@@ -64,7 +64,7 @@ put_response_msgs = {
     },
     '500': {
         'description': 'Internal server error',
-        'schema': HelloErrorModel
+        'schema': ArtifactsErrorModel
     }
 }
 
@@ -83,7 +83,7 @@ del_response_msgs = {
     },
     '500': {
         'description': 'Internal server error',
-        'schema': HelloErrorModel
+        'schema': ArtifactsErrorModel
     }
 }
 

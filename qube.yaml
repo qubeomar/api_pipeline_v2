@@ -1,11 +1,7 @@
 ---
-name: qube_placeholder
-language: qube_language
+name: api_pipeline_v2
+language: python
 pipeline: build_bake_test_deployment:v0.1
-notification:
-  type: slack
-  domain: qubeship
-  channel: qubeship
 security:
   keys_loc: "conf/"
 build:
@@ -13,11 +9,7 @@ build:
     name: python:3.5-onbuild
     onbuild:
       - scripts/build.sh
-  publish_artifacts:
-    - dist/
-    - nosetests.xml
-    - cov_html/
-    - flake8-output.txt
+  publish_artifact: dist/
   lint: true
 bake:
   strategy: docker
@@ -30,5 +22,46 @@ test:
   skip: true
   functional:
     provider: qubeship-sg
+ports:
+  container_ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    - containerPort: 8191
+      name: http
+      protocol: TCP
+  service_ports:
+    - name: "http"
+      protocol: "TCP"
+      port: 80
+      targetPort: 8191
+    - name: "https"
+      protocol: "TCP"
+      port: 443
+      targetPort: 8443
 deployment:
-   skip: true
+  continuous_deployment: true
+  environments:
+    prod:
+      - type: qubeship_managed
+        id: "k8s2"
+        template_id: qube_qubeship_apis
+        srcRepo: google
+environment_variables:
+  env:
+  - name: DEFAULT_LISTENER_PORT
+    value: "8191"
+  - name: AUTH_API_URL
+    value: https://api.qubeship.io/v1/auth
+  - name: VAULT_ADDR
+    value: https://vault.qubeship.io
+  - name: ARTIFACTS_MONGOALCHEMY_SERVER
+    value: $(MONGO_SERVICE_HOST)
+  - name: ARTIFACTS_MONGOALCHEMY_PORT
+    value: $(MONGO_SERVICE_PORT)
+  - name: ARTIFACTS_MONGOALCHEMY_DATABASE
+    value: api_pipeline_v2
+  - name: CI_ADDR
+    value: https://jenkins.qubeship.io
+  - name: CI_USERNAME
+    value: jenkins

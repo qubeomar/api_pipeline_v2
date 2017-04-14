@@ -1,10 +1,10 @@
 from enum import IntEnum
 
 
-class HelloServiceError(Exception):
+class ArtifactsServiceError(Exception):
     def __init__(self, message, errors):
         # Call the base class constructor with the parameters it needs
-        super(HelloServiceError, self).__init__(message)
+        super(ArtifactsServiceError, self).__init__(message)
 
         # Now for your custom code...
         self.errors = errors

@@ -1,11 +1,11 @@
 from qube.src.api import persist_db
 
 
-class Hello(persist_db.Document):
+class Artifacts(persist_db.Document):
     # Primary ID
     id = persist_db.StringField(required=False)
 
-    # Hello  model data
+    # Artifacts  model data
     name = persist_db.StringField(required=False)
     description = persist_db.StringField(required=False)
 
