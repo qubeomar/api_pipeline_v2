@@ -201,6 +201,9 @@ class TestArtifactsController(unittest.TestCase):
         self.assertTrue(result_collection[0].get('id') == id_to_get)
         get_record_dic = self.data.wrap()
         clean_nonserializable_attributes(get_record_dic)
+        if 'url' in get_record_dic:
+            del get_record_dic['url']
+        self.assertFalse( 'url' in result_collection[0])
         for key in get_record_dic:
             self.assertEqual(get_record_dic[key], result_collection[0].
                              get(key), "assertion failed for key {} ".

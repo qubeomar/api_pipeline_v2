@@ -7,7 +7,8 @@ from flask_restful_swagger_2 import Resource, swagger
 from mongoalchemy.exceptions import ExtraValueException
 
 from qube.src.api.decorators import login_required
-from qube.src.api.swagger_models.artifacts import ArtifactsModel # noqa: ignore=I100
+from qube.src.api.swagger_models.artifacts import ArtifactsModel, \
+    ArtifactListModel  # noqa: ignore=I100
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPost # noqa: ignore=I100
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPostResponse # noqa: ignore=I100
 from qube.src.api.swagger_models.artifacts import ArtifactsModelPut # noqa: ignore=I100
@@ -142,8 +143,16 @@ class ArtifactsController(Resource):
         LOG.debug("Serving  Get all request")
         list = ArtifactsService(authcontext['context']).get_all(project_id,
                                                                 iteration_id)
+        artifacts_list = []
+        for data in list:
+            clean_nonserializable_attributes(data)
+            if 'url' in data:
+                del data['url']
+            artifacts_list_model = ArtifactListModel(**data)
+            artifacts_list.append(artifacts_list_model)
+
         # normalize the name for 'id'
-        return list, 200
+        return artifacts_list, 200
 
     @swagger.doc(
         {
