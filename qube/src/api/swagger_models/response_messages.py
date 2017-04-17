@@ -1,6 +1,7 @@
 from flask_restful_swagger_2 import Schema
 
-from qube.src.api.swagger_models.artifacts import ArtifactsErrorModel
+from qube.src.api.swagger_models.artifacts import ArtifactsErrorModel, \
+    ArtifactListModel
 from qube.src.api.swagger_models.artifacts import ArtifactsModel
 from qube.src.api.swagger_models.artifacts \
     import ArtifactsModelPostResponse
@@ -33,6 +34,26 @@ get_response_msgs = {
     '200': {
         'description': 'OK',
         'schema': ArtifactsModel
+    },
+    '401': {
+        'description': 'Unauthorized'
+    },
+    '400': {
+        'description': 'Bad Request'
+    },
+    '404': {
+        'description': 'Not found'
+    },
+    '500': {
+        'description': 'Internal server error',
+        'schema': ArtifactsErrorModel
+    }
+}
+
+get_all_response_msgs = {
+    '200': {
+        'description': 'OK',
+        'schema': ArtifactListModel
     },
     '401': {
         'description': 'Unauthorized'

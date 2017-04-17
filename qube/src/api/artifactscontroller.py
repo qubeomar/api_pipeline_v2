@@ -17,8 +17,8 @@ from qube.src.api.swagger_models.parameters import (
     body_post_ex, body_put_ex, header_ex, path_ex, path_ex_iteration,
     path_ex_project)
 from qube.src.api.swagger_models.response_messages import (
-    del_response_msgs, ErrorModel, get_response_msgs, post_response_msgs,
-    put_response_msgs)
+    del_response_msgs, ErrorModel, get_response_msgs, get_all_response_msgs,
+    post_response_msgs, put_response_msgs)
 from qube.src.commons.error import ArtifactsServiceError
 from qube.src.commons.log import Log as LOG
 from qube.src.commons.utils import clean_nonserializable_attributes
@@ -130,9 +130,9 @@ class ArtifactsController(Resource):
     @swagger.doc(
         {
             'tags': ['Artifacts'],
-            'description': 'Artifacts get operation',
+            'description': 'Artifacts get all operation',
             'parameters': get_params,
-            'responses': get_response_msgs
+            'responses': get_all_response_msgs
         }
     )
     @login_required
